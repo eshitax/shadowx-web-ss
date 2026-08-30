@@ -1,1 +1,997 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ShadowX-SS - Website Screenshot Generator</title>
+    <style>
+        /* Global Reset & Font */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Share+Tech+Mono&display=swap');
+        
+        body {
+            font-family: 'Share Tech Mono', monospace;
+            background: #000000;
+            color: #ffffff;
+            min-height: 100vh;
+            background-image: 
+                radial-gradient(ellipse at center, rgba(128, 0, 255, 0.03) 0%, transparent 70%),
+                linear-gradient(180deg, #000000 0%, #0a0a0a 100%);
+            position: relative;
+            overflow-x: hidden;
+        }
+        
+        /* Animated background grid */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+            z-index: 0;
+            animation: gridScroll 30s linear infinite;
+        }
+        
+        @keyframes gridScroll {
+            0% { transform: translate(0, 0); }
+            100% { transform: translate(50px, 50px); }
+        }
+        
+        /* Particle effect */
+        .particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 0;
+            overflow: hidden;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: rgba(128, 0, 255, 0.3);
+            border-radius: 50%;
+            animation: floatParticle linear infinite;
+        }
+        
+        @keyframes floatParticle {
+            0% {
+                transform: translateY(100vh) scale(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-10vh) scale(1);
+                opacity: 0;
+            }
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            position: relative;
+            z-index: 2;
+        }
+        
+        /* Header */
+        .header {
+            text-align: center;
+            padding: 40px 0 30px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.05);
+            margin-bottom: 40px;
+            position: relative;
+            animation: slideDown 0.8s ease-out;
+        }
+        
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .header::after {
+            content: '';
+            position: absolute;
+            bottom: -2px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 0%;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #00ff41, #9b59b6, transparent);
+            animation: glowLine 3s ease-in-out infinite;
+        }
+        
+        @keyframes glowLine {
+            0% { width: 0%; opacity: 0; }
+            50% { width: 80%; opacity: 1; }
+            100% { width: 0%; opacity: 0; }
+        }
+        
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5rem;
+            font-weight: 900;
+            color: #00ff41;
+            text-shadow: 
+                0 0 10px rgba(0, 255, 65, 0.3),
+                0 0 20px rgba(0, 255, 65, 0.1);
+            letter-spacing: 4px;
+            animation: pulseText 3s ease-in-out infinite;
+        }
+        
+        @keyframes pulseText {
+            0%, 100% { 
+                text-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
+            }
+            50% { 
+                text-shadow: 0 0 20px rgba(0, 255, 65, 0.6), 0 0 40px rgba(0, 255, 65, 0.2);
+            }
+        }
+        
+        .logo-sub {
+            font-size: 0.9rem;
+            color: rgba(255, 255, 255, 0.4);
+            letter-spacing: 8px;
+            margin-top: 5px;
+        }
+        
+        .dev-credit {
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.3);
+            margin-top: 15px;
+            letter-spacing: 2px;
+        }
+        
+        .dev-credit a {
+            color: rgba(255, 255, 255, 0.4);
+            text-decoration: none;
+            transition: all 0.3s;
+        }
+        
+        .dev-credit a:hover {
+            color: #9b59b6;
+        }
+        
+        /* Input Section */
+        .input-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 0 30px rgba(128, 0, 255, 0.05);
+            animation: fadeInUp 0.6s ease-out 0.2s both;
+        }
+        
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        
+        .input-row {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .input-group {
+            flex: 1;
+            min-width: 250px;
+            position: relative;
+        }
+        
+        .input-group input {
+            width: 100%;
+            padding: 14px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 8px;
+            color: #ffffff;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 1rem;
+            transition: all 0.4s ease;
+            outline: none;
+        }
+        
+        .input-group input:focus {
+            border-color: #9b59b6;
+            box-shadow: 0 0 30px rgba(128, 0, 255, 0.1);
+            background: rgba(255, 255, 255, 0.05);
+            transform: scale(1.01);
+        }
+        
+        .input-group input::placeholder {
+            color: rgba(255, 255, 255, 0.2);
+        }
+        
+        .input-group .icon {
+            position: absolute;
+            left: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            opacity: 0.2;
+        }
+        
+        .size-selector {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+        
+        .size-btn {
+            padding: 10px 20px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            border-radius: 6px;
+            color: rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.4s ease;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.85rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .size-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(128, 0, 255, 0.1), transparent);
+            transition: left 0.5s ease;
+        }
+        
+        .size-btn:hover::before {
+            left: 100%;
+        }
+        
+        .size-btn:hover {
+            background: rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+            color: #ffffff;
+        }
+        
+        .size-btn.active {
+            background: rgba(128, 0, 255, 0.15);
+            border-color: #9b59b6;
+            color: #9b59b6;
+            box-shadow: 0 0 30px rgba(128, 0, 255, 0.1);
+        }
+        
+        .custom-size-inputs {
+            display: none;
+            gap: 10px;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+        
+        .custom-size-inputs.show {
+            display: flex;
+        }
+        
+        .custom-size-inputs input {
+            width: 80px;
+            padding: 8px 12px;
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 6px;
+            color: #ffffff;
+            font-family: 'Share Tech Mono', monospace;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .custom-size-inputs input:focus {
+            outline: none;
+            border-color: #9b59b6;
+            box-shadow: 0 0 20px rgba(128, 0, 255, 0.05);
+        }
+        
+        .custom-size-inputs span {
+            color: rgba(255, 255, 255, 0.3);
+            font-size: 0.8rem;
+        }
+        
+        .capture-btn {
+            padding: 14px 40px;
+            background: linear-gradient(135deg, rgba(128, 0, 255, 0.2), rgba(128, 0, 255, 0.05));
+            border: 1px solid #9b59b6;
+            border-radius: 8px;
+            color: #9b59b6;
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.4s ease;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .capture-btn::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: conic-gradient(from 0deg, transparent, rgba(128, 0, 255, 0.1), transparent, rgba(128, 0, 255, 0.1), transparent);
+            animation: rotateBtn 4s linear infinite;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+        
+        .capture-btn:hover::before {
+            opacity: 1;
+        }
+        
+        @keyframes rotateBtn {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .capture-btn:hover {
+            background: rgba(128, 0, 255, 0.2);
+            box-shadow: 0 0 50px rgba(128, 0, 255, 0.2);
+            transform: translateY(-3px) scale(1.02);
+            color: #ffffff;
+            border-color: #9b59b6;
+        }
+        
+        .capture-btn:active {
+            transform: translateY(0) scale(0.98);
+        }
+        
+        /* Screenshot Display */
+        .screenshot-display {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 30px;
+            margin-bottom: 40px;
+            min-height: 400px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            transition: all 0.4s ease;
+            animation: fadeInUp 0.6s ease-out 0.4s both;
+        }
+        
+        .screenshot-display:hover {
+            border-color: rgba(128, 0, 255, 0.1);
+            box-shadow: 0 0 40px rgba(128, 0, 255, 0.03);
+        }
+        
+        .screenshot-display .placeholder {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.2);
+            transition: all 0.4s ease;
+        }
+        
+        .screenshot-display .placeholder .icon {
+            font-size: 4rem;
+            margin-bottom: 15px;
+            opacity: 0.3;
+            animation: floatIcon 3s ease-in-out infinite;
+        }
+        
+        @keyframes floatIcon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .screenshot-display img {
+            max-width: 100%;
+            max-height: 600px;
+            border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            box-shadow: 0 0 50px rgba(128, 0, 255, 0.05);
+            animation: zoomIn 0.5s ease;
+        }
+        
+        @keyframes zoomIn {
+            from {
+                opacity: 0;
+                transform: scale(0.9);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+        
+        .screenshot-display .loading {
+            display: none;
+            text-align: center;
+        }
+        
+        .screenshot-display .loading.show {
+            display: block;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .loader {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            border: 3px solid rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            border-top-color: #9b59b6;
+            animation: spin 1s ease-in-out infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* History Section */
+        .history-section {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 12px;
+            padding: 25px;
+            animation: fadeInUp 0.6s ease-out 0.6s both;
+        }
+        
+        .history-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+        
+        .history-header h3 {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            letter-spacing: 2px;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        
+        .history-header .clear-btn {
+            padding: 6px 16px;
+            background: rgba(255, 0, 0, 0.05);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            border-radius: 4px;
+            color: rgba(255, 0, 0, 0.4);
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+        }
+        
+        .history-header .clear-btn:hover {
+            background: rgba(255, 0, 0, 0.1);
+            border-color: rgba(255, 0, 0, 0.2);
+            color: #ff4444;
+            transform: scale(1.05);
+        }
+        
+        .history-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .history-grid::-webkit-scrollbar {
+            width: 4px;
+        }
+        
+        .history-grid::-webkit-scrollbar-track {
+            background: rgba(255, 255, 255, 0.02);
+        }
+        
+        .history-grid::-webkit-scrollbar-thumb {
+            background: rgba(128, 0, 255, 0.3);
+            border-radius: 2px;
+        }
+        
+        .history-item {
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            padding: 12px;
+            transition: all 0.4s ease;
+            cursor: pointer;
+            animation: fadeIn 0.5s ease;
+        }
+        
+        .history-item:hover {
+            background: rgba(255, 255, 255, 0.04);
+            border-color: rgba(128, 0, 255, 0.2);
+            transform: translateY(-5px);
+            box-shadow: 0 5px 30px rgba(128, 0, 255, 0.05);
+        }
+        
+        .history-item img {
+            width: 100%;
+            height: 120px;
+            object-fit: cover;
+            border-radius: 4px;
+            margin-bottom: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .history-item:hover img {
+            transform: scale(1.02);
+        }
+        
+        .history-item .info {
+            font-size: 0.7rem;
+            color: rgba(255, 255, 255, 0.3);
+        }
+        
+        .history-item .info .url {
+            color: rgba(255, 255, 255, 0.5);
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .history-empty {
+            text-align: center;
+            color: rgba(255, 255, 255, 0.2);
+            padding: 40px 0;
+        }
+        
+        /* Status messages */
+        .status-msg {
+            margin-top: 15px;
+            padding: 10px 20px;
+            border-radius: 6px;
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+        
+        .status-msg.show {
+            display: block;
+        }
+        
+        .status-msg.error {
+            background: rgba(255, 0, 0, 0.05);
+            border: 1px solid rgba(255, 0, 0, 0.1);
+            color: #ff4444;
+        }
+        
+        .status-msg.success {
+            background: rgba(0, 255, 65, 0.05);
+            border: 1px solid rgba(0, 255, 65, 0.1);
+            color: #00ff41;
+        }
+        
+        /* API info */
+        .api-info {
+            margin-top: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.02);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 8px;
+            text-align: center;
+            font-size: 0.8rem;
+            color: rgba(255, 255, 255, 0.2);
+            animation: fadeInUp 0.6s ease-out 0.8s both;
+        }
+        
+        .api-info code {
+            background: rgba(255, 255, 255, 0.03);
+            padding: 2px 10px;
+            border-radius: 4px;
+            color: rgba(128, 0, 255, 0.6);
+            font-size: 0.75rem;
+        }
+        
+        .api-info strong {
+            color: rgba(255, 255, 255, 0.4);
+        }
+        
+        /* Responsive */
+        @media (max-width: 768px) {
+            .logo {
+                font-size: 2.2rem;
+            }
+            
+            .input-row {
+                flex-direction: column;
+            }
+            
+            .size-selector {
+                width: 100%;
+                justify-content: center;
+            }
+            
+            .capture-btn {
+                width: 100%;
+            }
+            
+            .history-grid {
+                grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            }
+        }
+        
+        /* Smooth scroll */
+        html {
+            scroll-behavior: smooth;
+        }
+        
+        /* Glitch text effect for logo */
+        .glitch {
+            position: relative;
+        }
+        
+        .glitch::before,
+        .glitch::after {
+            content: attr(data-text);
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.3;
+            pointer-events: none;
+        }
+        
+        .glitch::before {
+            color: #ff00ff;
+            animation: glitch1 4s infinite;
+        }
+        
+        .glitch::after {
+            color: #00ffff;
+            animation: glitch2 4s infinite;
+        }
+        
+        @keyframes glitch1 {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(-2px, 2px); }
+            94% { transform: translate(2px, -2px); }
+        }
+        
+        @keyframes glitch2 {
+            0%, 90%, 100% { transform: translate(0); }
+            92% { transform: translate(2px, -2px); }
+            94% { transform: translate(-2px, 2px); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Particles -->
+    <div class="particles" id="particles"></div>
 
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo glitch" data-text="SHADOWX-SS">SHADOWX-SS</div>
+            <div class="logo-sub">✦ WEBSITE SCREENSHOT GENERATOR ✦</div>
+            <div class="dev-credit">
+                Dev: Mueid Mursalin Rifat X Eshita &nbsp;│&nbsp; 
+                <a href="https://github.com/eshitax" target="_blank">github.com/eshitax</a>
+            </div>
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <div class="input-row">
+                <div class="input-group">
+                    <span class="icon">🌐</span>
+                    <input type="text" id="urlInput" placeholder="Enter website URL..." value="https://github.com">
+                </div>
+                <div class="size-selector">
+                    <button class="size-btn active" data-size="default">Default</button>
+                    <button class="size-btn" data-size="resized">Resized</button>
+                    <button class="size-btn" data-size="full">Full Page</button>
+                    <button class="size-btn" data-size="custom">Custom</button>
+                </div>
+                <div class="custom-size-inputs" id="customInputs">
+                    <span>W:</span>
+                    <input type="number" id="customWidth" value="800" min="100" max="2000">
+                    <span>H:</span>
+                    <input type="number" id="customHeight" value="600" min="100" max="2000">
+                </div>
+                <button class="capture-btn" id="captureBtn">▶ CAPTURE</button>
+            </div>
+            <div class="status-msg" id="statusMsg"></div>
+        </div>
+
+        <!-- Screenshot Display -->
+        <div class="screenshot-display" id="screenshotDisplay">
+            <div class="placeholder" id="placeholder">
+                <div class="icon">🖼️</div>
+                <div>Enter a URL and click CAPTURE</div>
+                <div style="font-size:0.8rem;margin-top:10px;opacity:0.5;">or use API: /ss?url=example.com&size=default</div>
+            </div>
+            <div class="loading" id="loading">
+                <div class="loader"></div>
+                <div style="margin-top:15px;color:rgba(255,255,255,0.3);">Capturing screenshot...</div>
+            </div>
+            <img id="screenshotImg" style="display:none;" alt="Screenshot">
+        </div>
+
+        <!-- History Section -->
+        <div class="history-section">
+            <div class="history-header">
+                <h3>📋 HISTORY</h3>
+                <button class="clear-btn" id="clearHistory">✕ Clear</button>
+            </div>
+            <div class="history-grid" id="historyGrid">
+                <div class="history-empty">No screenshots captured yet</div>
+            </div>
+        </div>
+
+        <!-- API Info -->
+        <div class="api-info">
+            <strong>API Usage:</strong> 
+            <code>/ss?url=https://example.com&size=default</code>
+            &nbsp;•&nbsp;
+            <code>size: default | resized | full | custom</code>
+            &nbsp;•&nbsp;
+            <code>/ss?url=example.com&size=custom&width=800&height=600</code>
+        </div>
+    </div>
+
+    <script>
+        // Create particles
+        function createParticles() {
+            const container = document.getElementById('particles');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDuration = (15 + Math.random() * 20) + 's';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.width = (1 + Math.random() * 3) + 'px';
+                particle.style.height = particle.style.width;
+                container.appendChild(particle);
+            }
+        }
+        createParticles();
+
+        // DOM Elements
+        const urlInput = document.getElementById('urlInput');
+        const captureBtn = document.getElementById('captureBtn');
+        const screenshotImg = document.getElementById('screenshotImg');
+        const placeholder = document.getElementById('placeholder');
+        const loading = document.getElementById('loading');
+        const statusMsg = document.getElementById('statusMsg');
+        const historyGrid = document.getElementById('historyGrid');
+        const clearHistoryBtn = document.getElementById('clearHistory');
+        const sizeBtns = document.querySelectorAll('.size-btn');
+        const customInputs = document.getElementById('customInputs');
+        const customWidth = document.getElementById('customWidth');
+        const customHeight = document.getElementById('customHeight');
+
+        let selectedSize = 'default';
+
+        // Size selector
+        sizeBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                sizeBtns.forEach(b => b.classList.remove('active'));
+                this.classList.add('active');
+                selectedSize = this.dataset.size;
+                
+                if (selectedSize === 'custom') {
+                    customInputs.classList.add('show');
+                } else {
+                    customInputs.classList.remove('show');
+                }
+            });
+        });
+
+        // Capture screenshot
+        async function captureScreenshot() {
+            let url = urlInput.value.trim();
+            if (!url) {
+                showStatus('Please enter a URL', 'error');
+                urlInput.style.borderColor = '#ff4444';
+                setTimeout(() => {
+                    urlInput.style.borderColor = '';
+                }, 2000);
+                return;
+            }
+
+            // Build URL
+            let apiUrl = `/ss?url=${encodeURIComponent(url)}&size=${selectedSize}`;
+            
+            if (selectedSize === 'custom') {
+                const w = customWidth.value || 800;
+                const h = customHeight.value || 600;
+                apiUrl += `&width=${w}&height=${h}`;
+            }
+
+            // Show loading
+            placeholder.style.display = 'none';
+            screenshotImg.style.display = 'none';
+            loading.classList.add('show');
+            hideStatus();
+
+            try {
+                const response = await fetch(apiUrl);
+                
+                if (!response.ok) {
+                    const error = await response.json();
+                    throw new Error(error.error || 'Failed to capture screenshot');
+                }
+
+                // Get image blob
+                const blob = await response.blob();
+                const imageUrl = URL.createObjectURL(blob);
+                
+                // Display image
+                screenshotImg.src = imageUrl;
+                screenshotImg.style.display = 'block';
+                loading.classList.remove('show');
+                showStatus('✓ Screenshot captured successfully!', 'success');
+                
+                // Add to history
+                addToHistory(url, imageUrl);
+                
+            } catch (error) {
+                loading.classList.remove('show');
+                placeholder.style.display = 'block';
+                showStatus('✗ Error: ' + error.message, 'error');
+                console.error('Capture error:', error);
+            }
+        }
+
+        // Add to history
+        function addToHistory(url, imageUrl) {
+            const item = document.createElement('div');
+            item.className = 'history-item';
+            item.innerHTML = `
+                <img src="${imageUrl}" alt="${url}">
+                <div class="info">
+                    <div class="url">${url}</div>
+                    <div>${new Date().toLocaleTimeString()}</div>
+                </div>
+            `;
+            item.addEventListener('click', () => {
+                screenshotImg.src = imageUrl;
+                screenshotImg.style.display = 'block';
+                placeholder.style.display = 'none';
+                loading.classList.remove('show');
+                screenshotImg.style.animation = 'none';
+                setTimeout(() => {
+                    screenshotImg.style.animation = 'zoomIn 0.5s ease';
+                }, 10);
+            });
+            
+            // Remove empty message if exists
+            const empty = historyGrid.querySelector('.history-empty');
+            if (empty) empty.remove();
+            
+            historyGrid.insertBefore(item, historyGrid.firstChild);
+            
+            // Limit history items
+            while (historyGrid.children.length > 20) {
+                historyGrid.removeChild(historyGrid.lastChild);
+            }
+        }
+
+        // Show status message
+        function showStatus(message, type) {
+            statusMsg.textContent = message;
+            statusMsg.className = `status-msg show ${type}`;
+        }
+
+        function hideStatus() {
+            statusMsg.className = 'status-msg';
+        }
+
+        // Clear history
+        clearHistoryBtn.addEventListener('click', async function() {
+            try {
+                await fetch('/api/clear-history', { method: 'POST' });
+                historyGrid.innerHTML = '<div class="history-empty">No screenshots captured yet</div>';
+                showStatus('✓ History cleared', 'success');
+            } catch (error) {
+                showStatus('✗ Failed to clear history', 'error');
+            }
+        });
+
+        // Event listeners
+        captureBtn.addEventListener('click', captureScreenshot);
+        
+        urlInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') captureScreenshot();
+        });
+
+        // Load history on page load
+        async function loadHistory() {
+            try {
+                const response = await fetch('/api/history');
+                const history = await response.json();
+                
+                if (history.length > 0) {
+                    historyGrid.innerHTML = '';
+                    history.slice().reverse().forEach(item => {
+                        const div = document.createElement('div');
+                        div.className = 'history-item';
+                        div.innerHTML = `
+                            <img src="${item.image_url}" alt="${item.url}">
+                            <div class="info">
+                                <div class="url">${item.url}</div>
+                                <div>${item.timestamp}</div>
+                            </div>
+                        `;
+                        div.addEventListener('click', () => {
+                            screenshotImg.src = item.image_url;
+                            screenshotImg.style.display = 'block';
+                            placeholder.style.display = 'none';
+                            loading.classList.remove('show');
+                            screenshotImg.style.animation = 'none';
+                            setTimeout(() => {
+                                screenshotImg.style.animation = 'zoomIn 0.5s ease';
+                            }, 10);
+                        });
+                        historyGrid.appendChild(div);
+                    });
+                }
+            } catch (error) {
+                console.error('Failed to load history:', error);
+            }
+        }
+
+        // Initialize
+        loadHistory();
+
+        // Keyboard shortcuts
+        document.addEventListener('keydown', (e) => {
+            if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
+                e.preventDefault();
+                captureScreenshot();
+            }
+        });
+
+        console.log('✨ ShadowX-SS loaded successfully!');
+        console.log('Dev: Mueid Mursalin Rifat X Eshita');
+        console.log('GitHub: github.com/eshitax');
+    </script>
+</body>
+</html>
